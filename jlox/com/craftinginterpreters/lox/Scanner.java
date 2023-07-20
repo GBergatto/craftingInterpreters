@@ -98,6 +98,10 @@ class Scanner {
       case '/':
         if (match('/')) { // comment: ignore the entire line
           while (peek() != '\n' && !isAtEnd()) advance();
+        } else if (match('*')) { // C-style block comments
+          advance();
+          while (!match('*') && peek() != '/' && !isAtEnd()) advance();
+          if (!isAtEnd()) advance(); // skip /
         } else {
           addToken(SLASH);
         }
