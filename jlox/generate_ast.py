@@ -12,14 +12,31 @@ types = [
 ]
 
 
+# define interface with visit method for each subclass
+def define_visitor(file, types):
+   file.write("\tinterface Visitor<R> {\n")
+   for t in types:
+      type_name = t.split(":")[0].strip()
+      file.write(f"\t\tR visit{type_name}{base_name}({type_name} {base_name.lower()});\n")
+   file.write("\t}\n")
+
+
+# define subclasses
 def define_type(file, class_name, fields):
    file.write(f"\n\tstatic class {class_name} extends {base_name} {{\n")
-   file.write(f"\t\t{class_name} ({fields}) {{\n")
 
+   # write constructor
+   file.write(f"\t\t{class_name} ({fields}) {{\n")
    fields = fields.split(", ")
    for field in fields:
       name = field.split(" ")[1]
       file.write(f"\t\t\tthis.{name} = {name};\n")
+   file.write("\t\t}\n\n")
+
+   # write accept method for Visitor pattern
+   file.write("\t\t@Override\n")
+   file.write("\t\t<R> R accept(Visitor<R> visitor) {\n")
+   file.write(f"\t\t\treturn visitor.visit{class_name}{base_name}(this);\n")
    file.write("\t\t}\n\n")
 
    for field in fields:
@@ -38,12 +55,17 @@ with open(file_path, "w") as f:
    f.write("import java.util.List;\n\n")
    f.write(f"abstract class {base_name} {{\n")
 
+   # implement Visitor pattern
+   define_visitor(f, types)
+
    # write subclasses
    for t in types:
       class_name = t.split(":")[0].strip()
       fields = t.split(":")[1].strip()
       define_type(f, class_name, fields)
 
-   f.write("}\n")
+   # write base accept method
+   f.write("\n\tabstract <R> R accept(Visitor<R> visitor);\n")
 
+   f.write("}\n")
 
