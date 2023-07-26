@@ -1,19 +1,11 @@
 #! /usr/bin/python
 import os
 
-# script to build Expr.java with all the classes for the Abstract Syntax Tree
-base_name = "Expr"
-rel_path = "com/craftinginterpreters/lox"
-types = [
-   "Binary : Expr left, Token operator, Expr right",
-   "Grouping : Expr expression",
-   "Literal : Object value",
-   "Unary : Token operator, Expr right",
-]
-
+# script to build Expr.java and Smtm.java with all the classes for the Abstract Syntax Tree
+REL_PATH = "com/craftinginterpreters/lox"
 
 # define interface with visit method for each subclass
-def define_visitor(file, types):
+def define_visitor(file, base_name, types):
    file.write("\tinterface Visitor<R> {\n")
    for t in types:
       type_name = t.split(":")[0].strip()
@@ -22,7 +14,7 @@ def define_visitor(file, types):
 
 
 # define subclasses
-def define_type(file, class_name, fields):
+def define_type(file, base_name, class_name, fields):
    file.write(f"\n\tstatic class {class_name} extends {base_name} {{\n")
 
    # write constructor
@@ -45,27 +37,42 @@ def define_type(file, class_name, fields):
    file.write("\t}\n")
 
 
-# calculate absolute path for the file
-script_dir = os.path.dirname(__file__).rstrip("/.")
-file_path = os.path.join(script_dir, rel_path, f"{base_name}.java")
+def generate(base_name, types):
+   # calculate absolute path for the file
+   script_dir = os.path.dirname(__file__).rstrip("/.")
+   file_path = os.path.join(script_dir, REL_PATH, f"{base_name}.java")
 
-with open(file_path, "w") as f:
-   # write the base class
-   f.write("package com.craftinginterpreters.lox;\n\n")
-   f.write("import java.util.List;\n\n")
-   f.write(f"abstract class {base_name} {{\n")
+   with open(file_path, "w") as f:
+      # write the base class
+      f.write("package com.craftinginterpreters.lox;\n\n")
+      f.write("import java.util.List;\n\n")
+      f.write(f"abstract class {base_name} {{\n")
 
-   # implement Visitor pattern
-   define_visitor(f, types)
+      # implement Visitor pattern
+      define_visitor(f, base_name, types)
 
-   # write subclasses
-   for t in types:
-      class_name = t.split(":")[0].strip()
-      fields = t.split(":")[1].strip()
-      define_type(f, class_name, fields)
+      # write subclasses
+      for t in types:
+         class_name = t.split(":")[0].strip()
+         fields = t.split(":")[1].strip()
+         define_type(f, base_name, class_name, fields)
 
-   # write base accept method
-   f.write("\n\tabstract <R> R accept(Visitor<R> visitor);\n")
+      # write base accept method
+      f.write("\n\tabstract <R> R accept(Visitor<R> visitor);\n")
 
-   f.write("}\n")
+      f.write("}\n")
 
+
+expr_types = [
+   "Binary : Expr left, Token operator, Expr right",
+   "Grouping : Expr expression",
+   "Literal : Object value",
+   "Unary : Token operator, Expr right",
+]
+stmt_types = [
+   "Expression : Expr expression",
+   "Print : Expr expression",
+]
+
+generate("Expr", expr_types)
+generate("Smtm", stmt_types)
