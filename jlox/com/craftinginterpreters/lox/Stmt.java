@@ -2,33 +2,33 @@ package com.craftinginterpreters.lox;
 
 import java.util.List;
 
-abstract class Smtm {
+abstract class Stmt {
 	interface Visitor<R> {
-		R visitExpressionSmtm(Expression smtm);
-		R visitPrintSmtm(Print smtm);
+		R visitExpressionStmt(Expression stmt);
+		R visitPrintStmt(Print stmt);
 	}
 
-	static class Expression extends Smtm {
+	static class Expression extends Stmt {
 		Expression (Expr expression) {
 			this.expression = expression;
 		}
 
 		@Override
 		<R> R accept(Visitor<R> visitor) {
-			return visitor.visitExpressionSmtm(this);
+			return visitor.visitExpressionStmt(this);
 		}
 
 		final Expr expression;
 	}
 
-	static class Print extends Smtm {
+	static class Print extends Stmt {
 		Print (Expr expression) {
 			this.expression = expression;
 		}
 
 		@Override
 		<R> R accept(Visitor<R> visitor) {
-			return visitor.visitPrintSmtm(this);
+			return visitor.visitPrintStmt(this);
 		}
 
 		final Expr expression;

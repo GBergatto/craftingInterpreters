@@ -75,4 +75,4 @@ stmt_types = [
 ]
 
 generate("Expr", expr_types)
-generate("Smtm", stmt_types)
+generate("Stmt", stmt_types)
