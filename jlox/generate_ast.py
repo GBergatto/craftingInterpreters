@@ -68,10 +68,12 @@ expr_types = [
    "Grouping : Expr expression",
    "Literal : Object value",
    "Unary : Token operator, Expr right",
+   "Variable : Token name",
 ]
 stmt_types = [
    "Expression : Expr expression",
    "Print : Expr expression",
+   "Var : Token name, Expr initializer",
 ]
 
 generate("Expr", expr_types)
