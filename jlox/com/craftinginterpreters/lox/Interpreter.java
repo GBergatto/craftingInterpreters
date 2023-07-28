@@ -115,6 +115,20 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     stmt.accept(this);
   }
 
+  void executeBlock(List<Stmt> statements, Environment environment) {
+    Environment previous = this.environment;
+    try {
+      // execute the statements inside a given environment (scope)
+      this.environment = environment;
+      for (Stmt statement : statements) {
+        execute(statement);
+      }
+    } finally {
+      // restore the previous environment
+      this.environment = previous;
+    }
+  }
+
   private String stringify(Object object) {
     if (object == null) return "nil";
     if (object instanceof Double) {
@@ -125,6 +139,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       return text;
     }
     return object.toString();
+  }
+
+  @Override
+  public Void visitBlockStmt(Stmt.Block stmt) {
+    executeBlock(stmt.statements, new Environment(environment));
+    return null;
   }
 
   @Override
