@@ -64,6 +64,7 @@ def generate(base_name, types):
 
 
 expr_types = [
+   "Assign : Token name, Expr value",
    "Binary : Expr left, Token operator, Expr right",
    "Grouping : Expr expression",
    "Literal : Object value",
