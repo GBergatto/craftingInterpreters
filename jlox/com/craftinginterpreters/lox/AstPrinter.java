@@ -8,6 +8,10 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 		return expr.accept(this);
 	}
 
+	String print(Stmt stmt) {
+		return stmt.accept(this);
+	}
+
 	// override the visit method of each expression type
 	@Override
 	public String visitBinaryExpr(Expr.Binary expr) {
