@@ -54,8 +54,12 @@ public class Lox {
 
     // stop if there was a syntax error.
     if (hadError) return;
+    
+    // for debugging
+    for (int i = 0; i < statements.size(); i++) {
+      System.out.println(new AstPrinter().print(statements.get(i)));
+    }
 
-    // System.out.println(new AstPrinter().print(expression));
     interpreter.interpret(statements);
   }
 

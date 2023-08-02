@@ -99,11 +99,23 @@ class Parser {
   }
 
   private Expr expression() {
-    return assignment();
+    return comma();
+  }
+
+  private Expr comma() {
+    Expr expr = assignment();
+
+    while (match(COMMA)) {
+      Token operator = previous();
+      Expr right = assignment();
+      expr = new Expr.Binary(expr, operator, right);
+    }
+
+    return expr;
   }
 
   private Expr assignment() {
-    Expr expr = or();
+    Expr expr = ternary();
 
     if (match(EQUAL)) {
       Token equals = previous();
@@ -116,6 +128,20 @@ class Parser {
 
       error(equals, "Invalid assignment target.");
     }
+    return expr;
+  }
+
+  private Expr ternary() {
+    Expr expr = or();
+
+    if (match(QUESTION)) {
+      Expr thenBranch = or();
+      consume(COLON, "Expect : after ? for ternary operator.");
+      Expr elseBranch = or();
+
+      return new Expr.Ternary(expr, thenBranch, elseBranch);
+    }
+
     return expr;
   }
 
@@ -180,7 +206,7 @@ class Parser {
     return expr;
   }
 
-   private Expr factor() {
+  private Expr factor() {
     Expr expr = unary();
 
     while (match(SLASH, STAR)) {
@@ -188,7 +214,7 @@ class Parser {
       Expr right = unary();
       expr = new Expr.Binary(expr, operator, right);
     }
-    
+
     return expr;
   }
 
@@ -317,7 +343,7 @@ class Parser {
     while (!check(RIGHT_BRACE) && !isAtEnd()) {
       statements.add(declaration());
     }
-    
+
     consume(RIGHT_BRACE, "Expect '}' after block.");
     return statements;
   }
