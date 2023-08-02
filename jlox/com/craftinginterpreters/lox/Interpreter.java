@@ -2,6 +2,8 @@ package com.craftinginterpreters.lox;
 
 import java.util.List;
 
+import com.craftinginterpreters.lox.Expr.Ternary;
+
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private Environment environment = new Environment();
 
@@ -84,6 +86,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     return null; // unreachable.
+  }
+
+  @Override
+  public Object visitTernaryExpr(Ternary expr) {
+    if (isTruthy(evaluate(expr.condition))) {
+      return evaluate(expr.thenBranch);
+    }
+    return evaluate(expr.elseBranch);
   }
 
   // check if the operand is a number or throw an error

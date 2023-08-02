@@ -18,6 +18,10 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 		return parenthesize(expr.operator.lexeme, expr.left, expr.right);
 	}
 
+	public String visitTernaryExpr(Expr.Ternary expr) {
+		return parenthesize2("?:", expr.condition, expr.thenBranch, expr.elseBranch);
+	}
+
 	@Override
 	public String visitGroupingExpr(Expr.Grouping expr) {
 		return parenthesize("group", expr.expression);

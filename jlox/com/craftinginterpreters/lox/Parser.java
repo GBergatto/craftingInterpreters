@@ -114,7 +114,7 @@ class Parser {
   }
 
   private Expr assignment() {
-    Expr expr = equality();
+    Expr expr = ternary();
 
     if (match(EQUAL)) {
       Token equals = previous();
@@ -127,6 +127,20 @@ class Parser {
 
       error(equals, "Invalid assignment target.");
     }
+    return expr;
+  }
+
+  private Expr ternary() {
+    Expr expr = equality();
+
+    if (match(QUESTION)) {
+      Expr thenBranch = equality();
+      consume(COLON, "Expect : after ? for ternary operator.");
+      Expr elseBranch = equality();
+
+      return new Expr.Ternary(expr, thenBranch, elseBranch);
+    }
+    
     return expr;
   }
 
