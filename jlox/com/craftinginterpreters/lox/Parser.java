@@ -135,9 +135,9 @@ class Parser {
     Expr expr = or();
 
     if (match(QUESTION)) {
-      Expr thenBranch = or();
+      Expr thenBranch = ternary(); // allow nesting 
       consume(COLON, "Expect : after ? for ternary operator.");
-      Expr elseBranch = or();
+      Expr elseBranch = ternary();
 
       return new Expr.Ternary(expr, thenBranch, elseBranch);
     }
