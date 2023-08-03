@@ -95,6 +95,10 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     return parenthesize2("while", stmt.condition, stmt.body);
   }
 
+	@Override
+	public String visitBreakStmt(Stmt.Break stmt) {
+		return parenthesize("break");
+	}
 
 	@Override
 	public String visitPrintStmt(Stmt.Print stmt) {

@@ -11,6 +11,7 @@ class Parser {
 
   private final List<Token> tokens;
   private int current = 0;
+  private int loopDepth = 0;
 
   Parser(List<Token> tokens) {
     this.tokens = tokens; // list of tokens to parse
@@ -258,6 +259,7 @@ class Parser {
     if (match(PRINT)) return printStatement();
     if (match(WHILE)) return whileStatement();
     if (match(LEFT_BRACE)) return new Stmt.Block(block());
+    if (match(BREAK)) return breakStatement();
 
     return expressionStatement();
   }
@@ -285,7 +287,9 @@ class Parser {
       increment = expression();
     }
     consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+    loopDepth++;
     Stmt body = statement();
+    loopDepth--;
 
     if (increment != null) { // append the increment to the body
       body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
@@ -326,9 +330,19 @@ class Parser {
     consume(LEFT_PAREN, "Expect '(' after 'while'.");
     Expr condition = expression();
     consume(RIGHT_PAREN, "Expect ')' after condition.");
+    loopDepth++;
     Stmt body = statement();
+    loopDepth--;
 
     return new Stmt.While(condition, body);
+  }
+
+  private Stmt breakStatement() {
+    if (loopDepth <= 0) {
+      error(previous(), "'Break' outside of loop.");
+    }
+    consume(SEMICOLON, "Expect ';' after 'break'.");
+    return new Stmt.Break();
   }
 
   private Stmt expressionStatement() {
