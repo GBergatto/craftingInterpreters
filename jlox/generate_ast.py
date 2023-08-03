@@ -21,8 +21,9 @@ def define_type(file, base_name, class_name, fields):
    file.write(f"\t\t{class_name} ({fields}) {{\n")
    fields = fields.split(", ")
    for field in fields:
-      name = field.split(" ")[1]
-      file.write(f"\t\t\tthis.{name} = {name};\n")
+      if field != "":
+         name = field.split(" ")[1]
+         file.write(f"\t\t\tthis.{name} = {name};\n")
    file.write("\t\t}\n\n")
 
    # write accept method for Visitor pattern
@@ -32,7 +33,8 @@ def define_type(file, base_name, class_name, fields):
    file.write("\t\t}\n\n")
 
    for field in fields:
-      file.write(f"\t\tfinal {field};\n")
+      if field != "":
+         file.write(f"\t\tfinal {field};\n")
 
    file.write("\t}\n")
 
@@ -75,6 +77,7 @@ expr_types = [
 ]
 stmt_types = [
    "Block : List<Stmt> statements",
+   "Break : ",
    "Expression : Expr expression",
    "If : Expr condition, Stmt thenBranch, Stmt elseBranch",
    "Print : Expr expression",
