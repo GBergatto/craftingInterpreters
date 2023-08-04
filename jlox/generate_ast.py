@@ -78,6 +78,7 @@ expr_types = [
 stmt_types = [
    "Block : List<Stmt> statements",
    "Break : ",
+   "Continue : ",
    "Expression : Expr expression",
    "If : Expr condition, Stmt thenBranch, Stmt elseBranch",
    "Print : Expr expression",

@@ -203,6 +203,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         execute(stmt.body);
       } catch (BreakException breakException) {
         break;
+      } catch (ContinueException continueException) {
+        // exit out of the block and start executing it again
       }
     }
     return null;
@@ -211,6 +213,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Void visitBreakStmt(Stmt.Break stmt) {
     throw new BreakException();
+  }
+
+  @Override
+  public Void visitContinueStmt(Stmt.Continue stmt) {
+    throw new ContinueException();
   }
 
   @Override

@@ -101,6 +101,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitContinueStmt(Stmt.Continue stmt) {
+		return parenthesize("continue");
+	}
+
+	@Override
 	public String visitPrintStmt(Stmt.Print stmt) {
 		return parenthesize("print", stmt.expression);
 	}

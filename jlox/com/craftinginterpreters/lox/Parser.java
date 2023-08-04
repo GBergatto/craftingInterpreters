@@ -260,6 +260,7 @@ class Parser {
     if (match(WHILE)) return whileStatement();
     if (match(LEFT_BRACE)) return new Stmt.Block(block());
     if (match(BREAK)) return breakStatement();
+    if (match(CONTINUE)) return continueStatement();
 
     return expressionStatement();
   }
@@ -343,6 +344,14 @@ class Parser {
     }
     consume(SEMICOLON, "Expect ';' after 'break'.");
     return new Stmt.Break();
+  }
+
+  private Stmt continueStatement() {
+    if (loopDepth <= 0) {
+      error(previous(), "'Continue' outside of loop.");
+    }
+    consume(SEMICOLON, "Expect ';' after 'continue'.");
+    return new Stmt.Continue();
   }
 
   private Stmt expressionStatement() {
