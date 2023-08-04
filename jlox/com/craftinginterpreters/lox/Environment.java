@@ -8,12 +8,12 @@ class Environment {
 	private final Map<String, Object> values = new HashMap<>();
 
 	Environment() { // constructor for global scope
-    enclosing = null;
-  }
+		enclosing = null;
+	}
 
 	Environment(Environment enclosing) { // local scope
-    this.enclosing = enclosing;
-  }
+		this.enclosing = enclosing;
+	}
 
 	Object get(Token name) {
 		if (values.containsKey(name.lexeme)) {
