@@ -2,7 +2,7 @@ package com.craftinginterpreters.lox;
 
 class ContinueException extends RuntimeException {
   ContinueException() {
-    super("Continue exception");
+    super(null, null, false, false);
   }
 }
 

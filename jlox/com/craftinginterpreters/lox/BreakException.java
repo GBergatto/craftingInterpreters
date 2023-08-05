@@ -2,6 +2,6 @@ package com.craftinginterpreters.lox;
 
 class BreakException extends RuntimeException {
   BreakException() {
-    super("Break exception");
+    super(null, null, false, false);
   }
 }
