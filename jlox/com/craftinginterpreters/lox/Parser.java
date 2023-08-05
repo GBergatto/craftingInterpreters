@@ -12,6 +12,7 @@ class Parser {
   private final List<Token> tokens;
   private int current = 0;
   private int loopDepth = 0;
+  private int funcDepth = 0;
 
   Parser(List<Token> tokens) {
     this.tokens = tokens; // list of tokens to parse
@@ -288,6 +289,7 @@ class Parser {
     if (match(FOR)) return forStatement();
     if (match(IF)) return ifStatement();
     if (match(PRINT)) return printStatement();
+    if (match(RETURN)) return returnStatement();
     if (match(WHILE)) return whileStatement();
     if (match(LEFT_BRACE)) return new Stmt.Block(block());
     if (match(BREAK)) return breakStatement();
@@ -358,6 +360,20 @@ class Parser {
     return new Stmt.Print(value);
   }
 
+  private Stmt returnStatement() {
+    Token keyword = previous();
+    Expr value = null;
+    if (!check(SEMICOLON)) {
+      value = expression();
+    }
+
+    if (funcDepth <= 0) {
+      error(keyword, "'return' outside of function body.");
+    }
+    consume(SEMICOLON, "Expect ';' after return value.");
+    return new Stmt.Return(keyword, value);
+  }
+
   private Stmt whileStatement() {
     consume(LEFT_PAREN, "Expect '(' after 'while'.");
     Expr condition = expression();
@@ -371,7 +387,7 @@ class Parser {
 
   private Stmt breakStatement() {
     if (loopDepth <= 0) {
-      error(previous(), "'Break' outside of loop.");
+      error(previous(), "'break' outside of loop.");
     }
     consume(SEMICOLON, "Expect ';' after 'break'.");
     return new Stmt.Break();
@@ -379,7 +395,7 @@ class Parser {
 
   private Stmt continueStatement() {
     if (loopDepth <= 0) {
-      error(previous(), "'Continue' outside of loop.");
+      error(previous(), "'continue' outside of loop.");
     }
     consume(SEMICOLON, "Expect ';' after 'continue'.");
     return new Stmt.Continue();
@@ -416,7 +432,9 @@ class Parser {
     }
     consume(RIGHT_PAREN, "Expect ')' after parameters.");
     consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+    funcDepth++;
     List<Stmt> body = block();
+    funcDepth--;
     return new Stmt.Function(name, parameters, body);
   }
 
