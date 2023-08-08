@@ -18,7 +18,7 @@ def define_type(file, base_name, class_name, fields):
    file.write(f"\n\tstatic class {class_name} extends {base_name} {{\n")
 
    # write constructor
-   file.write(f"\t\t{class_name} ({fields}) {{\n")
+   file.write(f"\t\t{class_name}({fields}) {{\n")
    fields = fields.split(", ")
    for field in fields:
       if field != "":
