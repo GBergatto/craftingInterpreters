@@ -12,7 +12,6 @@ class Parser {
   private final List<Token> tokens;
   private int current = 0;
   private int loopDepth = 0;
-  private int funcDepth = 0;
 
   Parser(List<Token> tokens) {
     this.tokens = tokens; // list of tokens to parse
@@ -367,9 +366,6 @@ class Parser {
       value = expression();
     }
 
-    if (funcDepth <= 0) {
-      error(keyword, "'return' outside of function body.");
-    }
     consume(SEMICOLON, "Expect ';' after return value.");
     return new Stmt.Return(keyword, value);
   }
@@ -432,9 +428,8 @@ class Parser {
     }
     consume(RIGHT_PAREN, "Expect ')' after parameters.");
     consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
-    funcDepth++;
     List<Stmt> body = block();
-    funcDepth--;
+
     return new Stmt.Function(name, parameters, body);
   }
 
