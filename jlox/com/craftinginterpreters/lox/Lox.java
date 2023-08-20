@@ -59,6 +59,9 @@ public class Lox {
     for (int i = 0; i < statements.size(); i++) {
       System.out.println(new AstPrinter().print(statements.get(i)));
     }
+    
+    Resolver resolver = new Resolver(interpreter);
+    resolver.resolve(statements);
 
     interpreter.interpret(statements);
   }
