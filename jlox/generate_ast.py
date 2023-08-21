@@ -78,8 +78,8 @@ expr_types = [
 ]
 stmt_types = [
    "Block : List<Stmt> statements",
-   "Break : ",
-   "Continue : ",
+   "Break : Token keyword",
+   "Continue : Token keyword",
    "Expression : Expr expression",
    "Function : Token name, List<Token> params, List<Stmt> body",
    "If : Expr condition, Stmt thenBranch, Stmt elseBranch",
