@@ -17,10 +17,16 @@ class LoxInstance {
   }
 
   Object get(Token name) {
+    // look for a field
     if (fields.containsKey(name.lexeme)) {
       return fields.get(name.lexeme);
     }
-    // throw an error if the field access doesn't exist
+
+    // look for a method in the instance's class
+    LoxFunction method = klass.findMethod(name.lexeme);
+    if (method != null) return method;
+
+    // throw an error if no property with this name is found
     throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
   }
 
