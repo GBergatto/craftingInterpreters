@@ -34,11 +34,23 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     declare(stmt.name);
     define(stmt.name);
 
-    for (Stmt.Function method : stmt.methods) {
+    beginScope(); 
+    scopes.peek().put("this", true);
+    // when a 'this' expression is found inside a method, it will resolve to this scope
+
+    for (Stmt.Function method : stmt.methods) { // resolve method declarations
       FunctionType declaration = FunctionType.METHOD;
       resolveFunction(method, declaration);
     }
 
+    endScope();
+
+    return null;
+  }
+
+  @Override
+  public Void visitThisExpr(Expr.This expr) {
+    resolveLocal(expr, expr.keyword);
     return null;
   }
 
