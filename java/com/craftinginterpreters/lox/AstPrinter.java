@@ -23,6 +23,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 		return parenthesize2("call", expr.callee, expr.arguments);
 	}
 
+	@Override
+	public String visitGetExpr(Expr.Get expr) {
+		return parenthesize2(".", expr.object, expr.name.lexeme);
+	}
+
 	public String visitTernaryExpr(Expr.Ternary expr) {
 		return parenthesize2("?:", expr.condition, expr.thenBranch, expr.elseBranch);
 	}
@@ -41,6 +46,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	@Override
 	public String visitLogicalExpr(Expr.Logical expr) {
 		return parenthesize(expr.operator.lexeme, expr.left, expr.right);
+	}
+
+	@Override
+	public String visitSetExpr(Expr.Set expr) {
+		return parenthesize2("=", expr.object, expr.name.lexeme, expr.value);
 	}
 
 	@Override
