@@ -82,7 +82,7 @@ expr_types = [
 stmt_types = [
    "Block : List<Stmt> statements",
    "Break : Token keyword",
-   "Class : Token name, List<Stmt.Function> methods",
+   "Class : Token name, Expr.Variable superclass, List<Stmt.Function> methods",
    "Continue : Token keyword",
    "Expression : Expr expression",
    "Function : Token name, List<Token> params, List<Stmt> body",
