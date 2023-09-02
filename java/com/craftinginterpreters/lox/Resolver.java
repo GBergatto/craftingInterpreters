@@ -52,6 +52,11 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
       resolve(stmt.superclass);
     }
 
+    if (stmt.superclass != null) {
+      beginScope(); // create a scope to bind "super" to the superclass
+      scopes.peek().put("super", true);
+    }
+
     beginScope(); 
     scopes.peek().put("this", true);
     // when a 'this' expression is found inside a method, it will resolve to this scope
@@ -65,7 +70,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
       resolveFunction(method, declaration);
     }
 
-    endScope();
+    endScope(); // "this" scope
+
+    if (stmt.superclass != null) endScope(); // "super" scope
 
     currentClass = enclosingClass;
     return null;
@@ -292,6 +299,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitSetExpr(Expr.Set expr) {
     resolve(expr.value);
     resolve(expr.object);
+    return null;
+  }
+
+  @Override
+  public Void visitSuperExpr(Expr.Super expr) {
+    resolveLocal(expr, expr.keyword);
     return null;
   }
 
