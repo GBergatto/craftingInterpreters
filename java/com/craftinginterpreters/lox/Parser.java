@@ -229,6 +229,9 @@ class Parser {
       Token operator = previous();
       Expr right = unary();
       return new Expr.Unary(operator, right);
+    } else if (match(PLUS)) { // error production
+      Token operator = previous();
+      error(operator, "Unary '+' expressions are not supported.");
     }
 
     return call();
