@@ -41,11 +41,20 @@ class Parser {
     throw error(peek(), message);
   }
 
+  // check the type of the current (unconsumed) token
   private boolean check(TokenType type) {
     if (isAtEnd()) return false;
     return peek().type == type;
   }
 
+  // check the type of the next token
+  private boolean checkNext(TokenType type) {
+    if (isAtEnd() || tokens.get(current + 1).type == EOF)
+      return false;
+    return tokens.get(current + 1).type == type;
+  }
+
+  // consume and return the current token
   private Token advance() {
     if (!isAtEnd()) current++;
     return previous();
@@ -55,6 +64,7 @@ class Parser {
     return peek().type == EOF;
   }
 
+  // return the current token yet to be consumed
   private Token peek() {
     return tokens.get(current);
   }
@@ -91,7 +101,11 @@ class Parser {
   private Stmt declaration() {
     try {
       if (match(CLASS)) return classDeclaration();
-      if (match(FUN)) return function("function");
+      if (check(FUN) && checkNext(IDENTIFIER)) {
+        // do not consume "fun" unless followed by the name of the function
+        advance();
+        return function("function");
+      }
       if (match(VAR)) return varDeclaration();
       return statement();
     } catch (ParseError error) {
@@ -299,6 +313,10 @@ class Parser {
       return new Expr.Grouping(expr);
     }
 
+    if (match(FUN)) {
+      return lambda("function");
+    }
+
     // this token cannot start an expression
     throw error(peek(), "Expect expression.");
   }
@@ -447,6 +465,13 @@ class Parser {
 
   private Stmt.Function function(String kind) {
     Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+    Expr.Function lambda = lambda(kind);
+
+    return new Stmt.Function(name, lambda.params, lambda.body);
+  }
+
+  // parse the list of parameters and the body of a (possibly anonymous) function
+  private Expr.Function lambda(String kind) {
     consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
     List<Token> parameters = new ArrayList<>();
     if (!check(RIGHT_PAREN)) {
@@ -461,7 +486,7 @@ class Parser {
     consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
     List<Stmt> body = block();
 
-    return new Stmt.Function(name, parameters, body);
+    return new Expr.Function(parameters, body);
   }
 
   private Stmt varDeclaration() {

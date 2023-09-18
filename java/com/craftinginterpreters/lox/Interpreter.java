@@ -28,6 +28,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   }
 
   @Override
+  public Object visitFunctionExpr(Expr.Function expr) {
+    return new LoxFunction("", expr.params, expr.body, environment, false);
+  }
+
+  @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
     return expr.value;
   }
@@ -285,7 +290,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     Map<String, LoxFunction> methods = new HashMap<>();
     for (Stmt.Function method : stmt.methods) {
-      LoxFunction function = new LoxFunction(method, environment,
+      LoxFunction function = new LoxFunction(method.name.lexeme, method.params, method.body, environment,
         method.name.lexeme.equals("init"));
       methods.put(method.name.lexeme, function);
     }
@@ -308,7 +313,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-    LoxFunction function = new LoxFunction(stmt, environment, false);
+    LoxFunction function = new LoxFunction(stmt.name.lexeme, stmt.params, stmt.body, environment, false);
     environment.define(stmt.name.lexeme, function);
     return null;
   }

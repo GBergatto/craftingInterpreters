@@ -69,7 +69,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declaration = FunctionType.INITIALIZER;
       }
 
-      resolveFunction(method, declaration);
+      resolveFunction(method.params, method.body, declaration);
     }
 
     endScope(); // "this" scope
@@ -169,20 +169,26 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     define(stmt.name);
     // the function name is available inside its body for recursive functions
 
-    resolveFunction(stmt, FunctionType.FUNCTION);
+    resolveFunction(stmt.params, stmt.body, FunctionType.FUNCTION);
     return null;
   }
 
-  private void resolveFunction(Stmt.Function function, FunctionType type) {
+  @Override
+  public Void visitFunctionExpr(Expr.Function expr) {
+    resolveFunction(expr.params, expr.body, FunctionType.FUNCTION);
+    return null;
+  }
+
+  private void resolveFunction(List<Token> params, List<Stmt> body, FunctionType type) {
     FunctionType enclosingFunction = currentFunction; // for nested functions
     currentFunction = type;
 
     beginScope();
-    for (Token param : function.params) {
+    for (Token param : params) {
       declare(param);
       define(param);
     }
-    resolve(function.body);
+    resolve(body);
     endScope();
     currentFunction = enclosingFunction;
   }
