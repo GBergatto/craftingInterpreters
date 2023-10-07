@@ -9,10 +9,28 @@
 // however, passing around a VM pointer would give the host more flexibility
 VM vm;
 
+static void resetStack() {
+  vm.stackTop = vm.stack;
+}
+
 void initVM() {
+  resetStack();
 }
 
 void freeVM() {
+}
+
+// add one element to the stack
+void push(Value value) {
+  // store value in the cell pointed by stackTop
+  *vm.stackTop = value;
+  vm.stackTop++;
+}
+
+// remove one element from the stack
+Value pop() {
+  vm.stackTop--;
+  return *vm.stackTop;
 }
 
 static InterpretResult run() {
@@ -21,6 +39,15 @@ static InterpretResult run() {
 
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
+    // stack tracing
+    printf(" ");
+    for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
+      printf("[ ");
+      printValue(*slot);
+      printf(" ]");
+    }
+    printf("\n");
+
     disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif
 
@@ -29,11 +56,12 @@ static InterpretResult run() {
       // decode the instruction
       case OP_CONSTANT: {
         Value constant = READ_CONSTANT();
-        printValue(constant);
-        printf("\n");
+        push(constant);
         break;
       }
       case OP_RETURN: {
+        printValue(pop());
+        printf("\n");
         return INTERPRET_OK;
       }
     }
