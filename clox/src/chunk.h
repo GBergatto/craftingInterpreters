@@ -17,6 +17,8 @@ typedef enum {
 typedef struct {
   int count;
   int capacity;
+  int lastLine; // line of the last token
+  int linesCapacity;
   uint8_t* code;
   int* lines;
   ValueArray constants;
@@ -26,5 +28,6 @@ void initChunk(Chunk* chunk);
 void writeChunk(Chunk* chunk, uint8_t byte, int line);
 void freeChunk(Chunk* chunk);
 int addConstant(Chunk* chunk, Value value);
+int getLine(Chunk* chunk, int offset);
 
 #endif
