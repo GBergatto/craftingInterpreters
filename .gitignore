@@ -1,4 +1,5 @@
 # C
+clox/test.lox
 clox/bin/
 clox/obj/
 *.o
